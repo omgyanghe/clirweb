@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中哈跨语言信息检索系统</title>
+    <link rel="stylesheet" href="/static_assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>中哈跨语言信息检索系统</h1>
+            <p>搜索中文或哈萨克语文档</p>
+        </header>
+        
+        <main>
+            <div class="search-section">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        v-model="searchQuery" 
+                        @keyup.enter="search"
+                        placeholder="输入搜索词（中文或哈萨克语）"
+                    >
+                    <button @click="search" :disabled="isSearching">
+                        {{ isSearching ? '搜索中...' : '搜索' }}
+                    </button>
+                </div>
+                
+                <div class="search-stats" v-if="hasSearched">
+                    找到 {{ totalResults }} 条结果 ({{ searchTime }}ms)
+                </div>
+            </div>
+            
+            <div class="results-section" v-if="hasSearched">
+                <div v-if="results.length === 0" class="no-results">
+                    未找到匹配的文档
+                </div>
+                
+                <div v-else class="results-list">
+                    <div v-for="(doc, index) in results" :key="doc.doc_id" class="result-item">
+                        <div class="result-rank">{{ doc.rank }}</div>
+                        <div class="result-content">
+                            <h3 class="result-title">{{ doc.title || '无标题' }}</h3>
+                            <p class="result-preview">{{ doc.text_preview }}</p>
+                            <div class="result-meta">
+                                <span class="result-id">ID: {{ doc.doc_id }}</span>
+                                <span class="result-score">相关度: {{ doc.score.toFixed(4) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pagination" v-if="totalPages > 1">
+                    <button 
+                        @click="prevPage" 
+                        :disabled="currentPage === 1"
+                    >上一页</button>
+                    
+                    <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+                    
+                    <button 
+                        @click="nextPage" 
+                        :disabled="currentPage === totalPages"
+                    >下一页</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2025 中哈跨语言信息检索系统</p>
+        </footer>
+    </div>
+
+    <script src="/static_assets/js/app.js"></script>
+</body>
+</html>
